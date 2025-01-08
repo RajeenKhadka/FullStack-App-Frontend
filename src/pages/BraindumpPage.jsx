@@ -32,7 +32,6 @@ function BraindumpPage() {
     //  /api/todo
     try {
       const response = await axios.get(`${LOCAL_URL}/api/braindump`);
-      console.log(response.data);
       setEntries(response.data);
     } catch (err) {
       console.log(err);
@@ -71,10 +70,15 @@ function BraindumpPage() {
   };
 
   const editEntry = async (id) => {
+    console.log(editedForm);
     try {
-      const response = await axios.put(`${LOCAL_URL}/api/braindump/${id}`);
+      const response = await axios.put(
+        `${LOCAL_URL}/api/braindump/${id}`,
+        editedForm
+      );
       console.log(response);
       setEntryUpdate(`edit entry successfully ${id}`);
+      setEditFormId(null); // Close the edit form after saving
     } catch (error) {
       console.error(error);
       setEntryUpdate("edit failed");
@@ -83,16 +87,18 @@ function BraindumpPage() {
 
   const handleEdit = (date, type, description, id) => {
     setEditFormId(id);
-    console.log("This is the edit id:", editFormID);
-
-    // edited form data
     setEditedForm({
       entryDate: date,
       entryType: type,
       description: description,
     });
+  };
 
-    console.log(editedForm);
+  const handleEditChange = (e) => {
+    setEditedForm((prevForm) => ({
+      ...prevForm, // Spread the current state to retain other fields
+      [e.target.name]: e.target.value, // Update the specific field based on the input name
+    }));
   };
 
   const handleDelete = (e, id) => {
@@ -112,45 +118,43 @@ function BraindumpPage() {
           <li key={index}>
             {editFormID === entry._id ? (
               <>
-                <>
-                  <input
-                    type="date"
-                    name="entryDate"
-                    required
-                    onChange={""}
-                    value={editedForm.entryDate}
-                  />
-                  <label>
-                    Choose the Entry Type
-                    <select
-                      name="entryType"
-                      value={editedForm.entryType}
-                      onChange={""}
-                    >
-                      <option value="None"> </option>
-                      <option value="ToDo">To Do</option>
-                      <option value="Idea">Idea</option>
-                      <option value="Appt">Appt</option>
-                      <option value="Sched">Sched</option>
-                      <option value="List">List</option>
-                    </select>
-                  </label>
-                  <input
-                    type="text"
-                    name="description"
-                    required
-                    onChange={handleChange}
-                    value={editedForm.description}
-                  />
-                  <button onClick={(e) => editEntry(e, entry._id)}>Save</button>
-                  <button onClick={() => null}>Cancel</button>
-                </>
+                <input
+                  type="date"
+                  name="entryDate"
+                  required
+                  onChange={handleEditChange}
+                  value={editedForm.entryDate}
+                />
+                <label>
+                  Choose the Entry Type
+                  <select
+                    name="entryType"
+                    value={editedForm.entryType}
+                    onChange={handleEditChange}
+                  >
+                    <option value="None"> </option>
+                    <option value="ToDo">To Do</option>
+                    <option value="Idea">Idea</option>
+                    <option value="Appt">Appt</option>
+                    <option value="Sched">Sched</option>
+                    <option value="List">List</option>
+                  </select>
+                </label>
+                <input
+                  type="text"
+                  name="description"
+                  required
+                  onChange={handleEditChange}
+                  value={editedForm.description}
+                />
+                <button onClick={() => editEntry(entry._id)}>Save</button>
+                <button onClick={() => setEditFormId(null)}>Cancel</button>
               </>
             ) : (
               <>
                 {entry.entryDate}: {entry.entryType} : {entry.description}
                 <button
-                  onClick={(e) =>
+                  onClick={() =>
                     handleEdit(
                       entry.entryDate,
                       entry.entryType,
@@ -163,7 +167,6 @@ function BraindumpPage() {
                 </button>
               </>
             )}
-
             <button onClick={(e) => handleDelete(e, entry._id)}>Delete</button>
           </li>
         ))}
@@ -192,12 +195,6 @@ function BraindumpPage() {
   };
 
   const handleChange = (e) => {
-    // console.log(e.target.name);
-    // console.log(e.target.value);
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleEditChange = (e) => {
     // console.log(e.target.name);
     // console.log(e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
