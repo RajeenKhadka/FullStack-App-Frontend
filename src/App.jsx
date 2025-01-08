@@ -9,13 +9,13 @@ import Nav from "./components/Nav";
 import "./App.css";
 
 function App() {
-  const [user, setUser] = useState("Rajeen");
+  const [user, setUser] = useState("");
   return (
     <>
       {user ? (
         <>
           <Nav />
-          <h1>Hi {user}</h1>
+          <h1>Hi {user.name}</h1>
           <Routes>
             <Route path="/" element={<Welcome />} />
             <Route path="/calendar" element={<CalendarPage />} />
@@ -24,7 +24,7 @@ function App() {
           </Routes>
         </>
       ) : (
-        <AuthPage />
+        <AuthPage setUser={setUser} />
       )}
     </>
   );
