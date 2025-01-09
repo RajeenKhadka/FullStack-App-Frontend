@@ -6,10 +6,11 @@ import BraindumpPage from "./pages/BraindumpPage";
 import TodoPage from "./pages/TodoPage";
 import AuthPage from "./pages/AuthPage";
 import Nav from "./components/Nav";
+import { getUser } from "./utilities/users-services";
 import "./App.css";
 
 function App() {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState(getUser());
   return (
     <>
       {user ? (
